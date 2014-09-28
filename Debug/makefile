@@ -13,6 +13,8 @@ $(GEN_CMDS__FLAG) \
 "./usbconfig.obj" \
 "./usb_structs.obj" \
 "./startup_ccs.obj" \
+"./spi.obj" \
+"./nrf24l01.obj" \
 "./main.obj" \
 "../neural_recorder_PC_interface.cmd" \
 -l"libc.a" \
@@ -132,8 +134,8 @@ neural_recorder_PC_interface.out: $(OBJS) $(CMD_SRCS) $(GEN_CMDS)
 # Other Targets
 clean:
 	-$(RM) $(TMS470_EXECUTABLE_OUTPUTS__QUOTED) "neural_recorder_PC_interface.out"
-	-$(RM) "main.pp" "startup_ccs.pp" "usb_structs.pp" "usbconfig.pp" "utils\uartstdio.pp" "utils\ustdlib.pp" 
-	-$(RM) "main.obj" "startup_ccs.obj" "usb_structs.obj" "usbconfig.obj" "utils\uartstdio.obj" "utils\ustdlib.obj" 
+	-$(RM) "main.pp" "nrf24l01.pp" "spi.pp" "startup_ccs.pp" "usb_structs.pp" "usbconfig.pp" "utils\uartstdio.pp" "utils\ustdlib.pp" 
+	-$(RM) "main.obj" "nrf24l01.obj" "spi.obj" "startup_ccs.obj" "usb_structs.obj" "usbconfig.obj" "utils\uartstdio.obj" "utils\ustdlib.obj" 
 	-@echo 'Finished clean'
 	-@echo ' '
 

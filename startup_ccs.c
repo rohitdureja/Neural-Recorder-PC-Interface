@@ -57,6 +57,7 @@ extern uint32_t __STACK_TOP;
 //
 //*****************************************************************************
 extern void USB0DeviceIntHandler(void);
+extern void IRQInterruptHandler(void);
 
 //*****************************************************************************
 //
@@ -86,7 +87,7 @@ void (* const g_pfnVectors[])(void) =
     IntDefaultHandler,                      // The PendSV handler
     IntDefaultHandler,                      // The SysTick handler
     IntDefaultHandler,                      // GPIO Port A
-    IntDefaultHandler,                      // GPIO Port B
+    IRQInterruptHandler,                    // GPIO Port B
     IntDefaultHandler,                      // GPIO Port C
     IntDefaultHandler,                      // GPIO Port D
     IntDefaultHandler,                      // GPIO Port E

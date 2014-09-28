@@ -2,7 +2,7 @@
  * usbconfig.c
  *
  *  Created on: Sep 27, 2014
- *      Author: Lab
+ *      Author: Rohit Dureja
  */
 
 #include <stdbool.h>
@@ -13,25 +13,18 @@
 #include "inc/hw_gpio.h"
 #include "inc/hw_uart.h"
 #include "inc/hw_sysctl.h"
-#include "driverlib/debug.h"
-#include "driverlib/fpu.h"
 #include "driverlib/gpio.h"
 #include "driverlib/pin_map.h"
 #include "driverlib/interrupt.h"
 #include "driverlib/sysctl.h"
-#include "driverlib/systick.h"
-#include "driverlib/timer.h"
 #include "driverlib/uart.h"
-#include "driverlib/usb.h"
 #include "driverlib/rom.h"
 #include "usblib/usblib.h"
 #include "usblib/usbcdc.h"
-#include "usblib/usb-ids.h"
 #include "usblib/device/usbdevice.h"
 #include "usblib/device/usbdcdc.h"
-#include "utils/ustdlib.h"
-#include "usb_structs.h"
 #include "utils/uartstdio.h"
+#include "usb_structs.h"
 #include "usbconfig.h"
 
 // Initialise the USB peripheral

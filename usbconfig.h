@@ -2,7 +2,7 @@
  * usbconfig.h
  *
  *  Created on: Sep 27, 2014
- *      Author: Lab
+ *      Author: Rohit Dureja
  */
 
 #ifndef USBCONFIG_H_
