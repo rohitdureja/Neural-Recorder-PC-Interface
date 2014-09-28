@@ -8,11 +8,16 @@ CG_TOOL_ROOT := C:/ti/ccsv5/tools/compiler/arm_5.1.1
 
 ORDERED_OBJS += \
 $(GEN_CMDS__FLAG) \
+"./utils/ustdlib.obj" \
+"./utils/uartstdio.obj" \
+"./usbconfig.obj" \
+"./usb_structs.obj" \
 "./startup_ccs.obj" \
 "./main.obj" \
 "../neural_recorder_PC_interface.cmd" \
 -l"libc.a" \
 -l"C:/ti/TivaWare_C_Series-1.1/examples/boards/ek-tm4c123gxl/project0/ccs/../../../../../driverlib/ccs/Debug/driverlib.lib" \
+-l"C:\ti\TivaWare_C_Series-1.1\usblib\ccs\Debug\usblib.lib" \
 
 -include ../makefile.init
 
@@ -22,7 +27,9 @@ RMDIR := RMDIR /S/Q
 # All of the sources participating in the build are defined here
 -include sources.mk
 -include subdir_vars.mk
+-include utils/subdir_vars.mk
 -include subdir_rules.mk
+-include utils/subdir_rules.mk
 -include objects.mk
 
 ifneq ($(MAKECMDGOALS),clean)
@@ -117,7 +124,7 @@ all: neural_recorder_PC_interface.out
 neural_recorder_PC_interface.out: $(OBJS) $(CMD_SRCS) $(GEN_CMDS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: ARM Linker'
-	"C:/ti/ccsv5/tools/compiler/arm_5.1.1/bin/armcl" -mv7M4 --code_state=16 --float_support=FPv4SPD16 --abi=eabi -me -O2 -g --gcc --define=ccs="ccs" --define=PART_TM4C123GH6PM --define=TARGET_IS_BLIZZARD_RB1 --diag_warning=225 --display_error_number --diag_wrap=off --gen_func_subsections=on --ual -z --stack_size=256 -m"project0_ccs.map" --heap_size=0 -i"C:/ti/ccsv5/tools/compiler/arm_5.1.1/lib" -i"C:/ti/ccsv5/tools/compiler/arm_5.1.1/include" --reread_libs --warn_sections --display_error_number --diag_wrap=off --xml_link_info="neural_recorder_PC_interface_linkInfo.xml" --rom_model -o "neural_recorder_PC_interface.out" $(ORDERED_OBJS)
+	"C:/ti/ccsv5/tools/compiler/arm_5.1.1/bin/armcl" -mv7M4 --code_state=16 --float_support=FPv4SPD16 --abi=eabi -me -O2 -g --gcc --define=ccs="ccs" --define=PART_TM4C123GH6PM --define=TARGET_IS_BLIZZARD_RB1 --diag_warning=225 --display_error_number --diag_wrap=off --gen_func_subsections=on --ual -z --stack_size=1024 -m"project0_ccs.map" --heap_size=0 -i"C:/ti/ccsv5/tools/compiler/arm_5.1.1/lib" -i"C:/ti/ccsv5/tools/compiler/arm_5.1.1/include" --reread_libs --warn_sections --display_error_number --diag_wrap=off --xml_link_info="neural_recorder_PC_interface_linkInfo.xml" --rom_model -o "neural_recorder_PC_interface.out" $(ORDERED_OBJS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 	@$(MAKE) --no-print-directory post-build
@@ -125,8 +132,8 @@ neural_recorder_PC_interface.out: $(OBJS) $(CMD_SRCS) $(GEN_CMDS)
 # Other Targets
 clean:
 	-$(RM) $(TMS470_EXECUTABLE_OUTPUTS__QUOTED) "neural_recorder_PC_interface.out"
-	-$(RM) "main.pp" "startup_ccs.pp" 
-	-$(RM) "main.obj" "startup_ccs.obj" 
+	-$(RM) "main.pp" "startup_ccs.pp" "usb_structs.pp" "usbconfig.pp" "utils\uartstdio.pp" "utils\ustdlib.pp" 
+	-$(RM) "main.obj" "startup_ccs.obj" "usb_structs.obj" "usbconfig.obj" "utils\uartstdio.obj" "utils\ustdlib.obj" 
 	-@echo 'Finished clean'
 	-@echo ' '
 
