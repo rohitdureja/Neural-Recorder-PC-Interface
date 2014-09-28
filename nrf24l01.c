@@ -143,7 +143,7 @@ uint32_t RFWriteSendBuffer(uint32_t *ui32Data, uint32_t ui32Bytes)
 }
 
 // read from recive buffer. Returns number of bytes read
-uint32_t RFReadRecieveBuffer(uint32_t *ui32Data)
+uint32_t RFReadRecieveBuffer(uint8_t *ui32Data)
 {
 	uint32_t ui32Bytes;
 	uint32_t i;

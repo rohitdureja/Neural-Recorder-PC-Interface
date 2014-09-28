@@ -16,8 +16,8 @@
 #define SCK		GPIO_PIN_0
 #define MOSI 	GPIO_PIN_3
 #define MISO 	GPIO_PIN_2
-// #define IRQ 	GPIO_PIN_7 // EVK, Launchpad Board
-#define IRQ 	GPIO_PIN_4 // 32-channel board
+#define IRQ 	GPIO_PIN_7 // EVK, Launchpad Board
+// #define IRQ 	GPIO_PIN_4 // 32-channel board
 
 // Defines for SPI pin port mappings
 #define CE_BASE 		GPIO_PORTB_BASE

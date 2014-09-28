@@ -34,7 +34,7 @@ void IRQInterruptHandler(void);
 void RxDataHandler();
 
 // Buffer for RF recieve data
-uint32_t ui32RxBuffer[MAX_PLOAD];
+uint8_t ui8RxBuffer[MAX_PLOAD];
 
 // The error routine that is called if the driver library encounters an error.
 #ifdef DEBUG
@@ -112,19 +112,14 @@ void RxDataHandler()
 // RF module interrupt handler. Called whenever new data is recieved.
 void IRQInterruptHandler(void)
 {
-	uint32_t ui32Bytes, i;
+	uint32_t ui32Bytes;
 	GPIOIntClear(IRQ_BASE, GPIO_INT_PIN_7); // EVK, Launchpad: clear interrupt flag
 
 	SPISetCELow(); // set CE low to cease all operation
 
 	// --------------- RX operation  ------------- //
-	ui32Bytes = RFReadRecieveBuffer(ui32RxBuffer);
-	UARTprintf("%d received: ", ui32Bytes);
-	for(i = 0 ; i < ui32Bytes ; ++i)
-	{
-		UARTprintf("%x ", ui32RxBuffer[i]);
-	}
-	UARTprintf("\n");
+	ui32Bytes = RFReadRecieveBuffer(ui8RxBuffer);
+	USBBufferWrite(&TxBuffer, ui8RxBuffer, ui32Bytes);
 
 	// Flush RX buffer
 	SPISetCSNLow();

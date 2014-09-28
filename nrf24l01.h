@@ -67,7 +67,7 @@ uint32_t RFReadRegister(uint32_t);
 uint32_t RFWriteSendBuffer(uint32_t *, uint32_t);
 
 // read from recive buffer. Returns number of bytes read
-uint32_t RFReadRecieveBuffer(uint32_t *);
+uint32_t RFReadRecieveBuffer(uint8_t *);
 
 
 #endif /* NRF24L01_H_ */
