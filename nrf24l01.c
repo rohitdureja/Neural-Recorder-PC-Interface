@@ -86,6 +86,20 @@ void RFInit(uint32_t ui32Mode)
 
 		SPISetCEHigh(); // enable all communication
 	}
+
+	RFWriteRegister(WRITE_REG + STATUSREG, 0x40); // Clear RX_DR flag
+
+	//Flush TX buffer
+	SPISetCSNLow();
+	SPIDataWrite(FLUSH_TX);
+	SPIDataRead();
+	SPISetCSNHigh();
+
+	//Flush RX buffer
+	SPISetCSNLow();
+	SPIDataWrite(FLUSH_RX);
+	SPIDataRead();
+	SPISetCSNHigh();
 }
 
 // write into a register. returns status
@@ -145,7 +159,7 @@ uint32_t RFWriteSendBuffer(uint32_t *ui32Data, uint32_t ui32Bytes)
 // read from recive buffer. Returns number of bytes read
 uint32_t RFReadRecieveBuffer(uint8_t *ui32Data)
 {
-	uint32_t ui32Bytes;
+	uint32_t ui32Bytes = 32;
 	uint32_t i;
 	// Find number of bytes to read
 	SPISetCSNLow();

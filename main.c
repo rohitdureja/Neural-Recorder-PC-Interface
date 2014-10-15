@@ -90,6 +90,7 @@ int main(void)
     ROM_GPIOPadConfigSet(IRQ_BASE, IRQ, GPIO_STRENGTH_2MA, GPIO_PIN_TYPE_STD_WPU);
     GPIOIntRegister(IRQ_BASE, IRQInterruptHandler);
     ROM_GPIOIntTypeSet(IRQ_BASE, IRQ, GPIO_FALLING_EDGE);
+    GPIOIntClear(IRQ_BASE, GPIO_INT_PIN_7);
     GPIOIntEnable(IRQ_BASE, GPIO_INT_PIN_7); // EVK, Launchpad Board
 
     while(1)
