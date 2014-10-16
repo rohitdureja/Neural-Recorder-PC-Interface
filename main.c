@@ -118,15 +118,21 @@ int main(void)
 // Data handler for RX channel
 void RxDataHandler()
 {
+	int i;
 	uint32_t numbytes;
 	uint8_t data[32];
 	numbytes = USBBufferDataAvailable(&RxBuffer);
 	USBBufferRead(&RxBuffer, data, numbytes);
 	if(isConfigured == false) // recieving configuration data
 	{
+		UARTprintf("Bytes received: %d\n", numbytes);
 		if(data[0] == 1)
 		{
 			UARTprintf("Number of channels: %d\n", ((data[3] << 8) | data[2]));
+			for(i = 0 ; i < ((data[3] << 8) | data[2]) ; ++i)
+			{
+				UARTprintf("Channel: %d\n", data[i*2 + 4]);
+			}
 		}
 		if(data[0] == 2)
 		{
