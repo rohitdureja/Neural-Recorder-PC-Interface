@@ -35,7 +35,7 @@ void RxDataHandler();
 
 // Buffer for RF recieve data
 uint8_t ui8RxBuffer[MAX_PLOAD];
-bool isConfigured;
+volatile bool isConfigured;
 
 // The error routine that is called if the driver library encounters an error.
 #ifdef DEBUG
@@ -97,9 +97,21 @@ int main(void)
     GPIOIntClear(IRQ_BASE, GPIO_INT_PIN_7);
     GPIOIntEnable(IRQ_BASE, GPIO_INT_PIN_7); // EVK, Launchpad Board
 
+
+    ROM_IntPrioritySet(INT_USB0, 0x00); // high priority
+    ROM_IntPrioritySet(INT_GPIOB, 0x10); // low priority
+
+
+
     while(1)
     {
-
+    	 if(isConfigured == false)
+    	 {
+    		 ROM_GPIOPinWrite(GPIO_PORTB_BASE, LED_0, LED_0);
+    		 ROM_SysCtlDelay(ROM_SysCtlClockGet()/12);
+    		 ROM_GPIOPinWrite(GPIO_PORTB_BASE, LED_0, 0);
+    		 ROM_SysCtlDelay(ROM_SysCtlClockGet()/12);
+    	 }
     }
 }
 
@@ -110,8 +122,20 @@ void RxDataHandler()
 	uint8_t data[32];
 	numbytes = USBBufferDataAvailable(&RxBuffer);
 	USBBufferRead(&RxBuffer, data, numbytes);
-	if(isConfigured == false && numbytes <= 4) // recieving configuration data
+	if(isConfigured == false) // recieving configuration data
 	{
+		if(data[0] == 1)
+		{
+			UARTprintf("Number of channels: %d\n", ((data[3] << 8) | data[2]));
+		}
+		if(data[0] == 2)
+		{
+			UARTprintf("Buffer Size: %d\n", ((data[3] << 8) | data[2]));
+		}
+		if(data[0] == 3)
+		{
+			UARTprintf("Sampling Frequency: %d\n", ((data[3] << 8) | data[2]));
+		}
 		if(data[0] == 10)
 		{
 			isConfigured = true;
@@ -123,6 +147,17 @@ void RxDataHandler()
 		}
 		RFWriteSendBuffer(data, numbytes);
 	}
+
+	if(isConfigured == true && data[0] == 13) // bad number reset system
+	{
+		isConfigured = false;
+		UARTprintf("Resetting system\n");
+		RFWriteSendBuffer(data, numbytes);
+		ROM_SysCtlDelay(ROM_SysCtlClockGet()/12);
+		RFInit(1); // Enable RF for TX
+		return;
+	}
+
 	//USBBufferFlush(&RxBuffer);
 	//USBBufferWrite(&TxBuffer, data, numbytes);
 }
@@ -153,7 +188,6 @@ void IRQInterruptHandler(void)
 	else if(RFReadRegister(READ_REG + STATUSREG) & 0x20) // transmit successful
 	{
 		RFWriteRegister(WRITE_REG + STATUSREG, 0x20); // Clear RX_DR flag
-		UARTprintf("sent\n");
 	}
 	else // failed transmission
 	{
