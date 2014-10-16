@@ -35,6 +35,7 @@ void RxDataHandler();
 
 // Buffer for RF recieve data
 uint8_t ui8RxBuffer[MAX_PLOAD];
+bool isConfigured;
 
 // The error routine that is called if the driver library encounters an error.
 #ifdef DEBUG
@@ -76,14 +77,17 @@ int main(void)
     ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOB);
     ROM_GPIOPinTypeGPIOOutput(GPIO_PORTB_BASE, LED_0 | LED_1 | LED_2 | LED_3 );
 
+    // Recorder is initially not configured
+    isConfigured = false;
+
     // Initialise UART for debug
     ConfigureUART();
 
     // Initialise USBCDC for VCP.
     USBInit();
 
-    // Initialize RF module port for RX
-    RFInit(0);
+    // Initialize RF module for TX initially to configure recorder
+    RFInit(1);
 
     // Set up IRQ for handling interrupts
     ROM_GPIOPinTypeGPIOInput(IRQ_BASE, IRQ);
@@ -95,7 +99,7 @@ int main(void)
 
     while(1)
     {
-    	ROM_SysCtlSleep();
+
     }
 }
 
@@ -106,8 +110,21 @@ void RxDataHandler()
 	uint8_t data[32];
 	numbytes = USBBufferDataAvailable(&RxBuffer);
 	USBBufferRead(&RxBuffer, data, numbytes);
-	USBBufferFlush(&RxBuffer);
-	USBBufferWrite(&TxBuffer, data, numbytes);
+	if(isConfigured == false && numbytes <= 4) // recieving configuration data
+	{
+		if(data[0] == 10)
+		{
+			isConfigured = true;
+			UARTprintf("Configuration complete\n");
+			RFWriteSendBuffer(data, numbytes);
+			ROM_SysCtlDelay(ROM_SysCtlClockGet()/12);
+			RFInit(0); // Enable RF for RX
+			return;
+		}
+		RFWriteSendBuffer(data, numbytes);
+	}
+	//USBBufferFlush(&RxBuffer);
+	//USBBufferWrite(&TxBuffer, data, numbytes);
 }
 
 // RF module interrupt handler. Called whenever new data is recieved.
@@ -118,19 +135,37 @@ void IRQInterruptHandler(void)
 
 	SPISetCELow(); // set CE low to cease all operation
 
-	// --------------- RX operation  ------------- //
-	ui32Bytes = RFReadRecieveBuffer(ui8RxBuffer);
-	USBBufferWrite(&TxBuffer, ui8RxBuffer, ui32Bytes);
+	if(RFReadRegister(READ_REG + STATUSREG) & 0x40) // read operation
+	{
+		// --------------- RX operation  ------------- //
+		ui32Bytes = RFReadRecieveBuffer(ui8RxBuffer);
+		USBBufferWrite(&TxBuffer, ui8RxBuffer, ui32Bytes);
 
-	// Flush RX buffer
-	SPISetCSNLow();
-	SPIDataWrite(FLUSH_RX);
-	SPIDataRead();
-	SPISetCSNHigh();
+		// Flush RX buffer
+		SPISetCSNLow();
+		SPIDataWrite(FLUSH_RX);
+		SPIDataRead();
+		SPISetCSNHigh();
 
-	RFWriteRegister(WRITE_REG + STATUSREG, 0x40); // Clear RX_DR flag
-	// --------------- RX operation  ------------- //
+		RFWriteRegister(WRITE_REG + STATUSREG, 0x40); // Clear RX_DR flag
+		// --------------- RX operation  ------------- //
+	}
+	else if(RFReadRegister(READ_REG + STATUSREG) & 0x20) // transmit successful
+	{
+		RFWriteRegister(WRITE_REG + STATUSREG, 0x20); // Clear RX_DR flag
+		UARTprintf("sent\n");
+	}
+	else // failed transmission
+	{
+		//Flush TX buffer
+		SPISetCSNLow();
+		SPIDataWrite(FLUSH_TX);
+		SPIDataRead();
+		SPISetCSNHigh();
 
+		RFWriteRegister(WRITE_REG + STATUSREG, 0x10); // Clear MAX_RT flag
+
+	}
 	SPISetCEHigh(); // set CE high again to start all operation
 }
 

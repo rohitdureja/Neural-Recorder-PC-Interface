@@ -64,7 +64,7 @@ uint32_t RFWriteRegister(uint32_t, uint32_t);
 uint32_t RFReadRegister(uint32_t);
 
 // write to send buffer. Returns numbers of bytes written
-uint32_t RFWriteSendBuffer(uint32_t *, uint32_t);
+uint32_t RFWriteSendBuffer(uint8_t *, uint32_t);
 
 // read from recive buffer. Returns number of bytes read
 uint32_t RFReadRecieveBuffer(uint8_t *);
